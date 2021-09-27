@@ -1,7 +1,7 @@
 import requests
 from django.db import models
 from django.conf import settings
-
+import africastalking
 class phoneNumbers(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
@@ -26,25 +26,44 @@ class Outbox(models.Model):
 
     @staticmethod
     def send(phone_number, message):
-        url = settings.AT_ENDPOINT_URL
-        headers = {'ApiKey': settings.AT_API_KEY,
-                   'Content-Type': 'application/x-www-form-urlencoded',
-                   'Accept': 'application/json'}
-        body = {'username': settings.AT_USER_NAME,
-                'from': settings.AT_FROM_VALUE,
-                'message': message,
-                'to': phone_number}
-        response = requests.post(url=url, headers=headers, data=body)
+        username = "wmukasa"   
+        api_key = "db6816cf46dde48c18b17055b769e8f75e253ba08cc5db8e93e0a8923300fc09"      
+        africastalking.initialize(username, api_key)
+        sms = africastalking.SMS
+        my_phones =[]
+        phone_set = phoneNumbers.objects.exclude(phone='').values_list('phone')
+        for contact in phone_set:
+            my_phones.append(contact[0])
+        phone_number=my_phones
+        response = sms.send(message,phone_number)
+        # url = settings.AT_ENDPOINT_URL
+        # headers = {'ApiKey': settings.AT_API_KEY,
+        #            'Content-Type': 'application/x-www-form-urlencoded',
+        #            'Accept': 'application/json'}
+        # body = {'username': settings.AT_USER_NAME,
+                
+        #         'message': message,
+        #         'to': phone_number}
+        # response = requests.post(url=url, headers=headers, data=body)
 
-        data = response.json().get('SMSMessageData').get('Recipients')[0]
-        print(data)
-        Outbox_object = Outbox(status=data['status'],
-                               statusCode=data['statusCode'],
-                               phone=data['number'],
-                               text=message,
-                               messageId=data['messageId'])
-        Outbox_object.save()
-      
+        # data = response.json().get('SMSMessageData').get('Recipients')[0]
+        # print(data)
+    
+        # Outbox_object = Outbox(status=data['status'],
+        #                        statusCode=data['statusCode'],
+        #                        phone=data['number'],
+        #                        text=message,
+        #                        messageId=data['messageId'])
+        # Outbox_object.save()
+        for recipient in response['SMSMessageData']['Recipients']:
+            #number = recipient['number']
+            status = recipient['status']
+            statusCode = recipient['statusCode']
+            phone = recipient['number']
+            text = message
+            messageId = recipient['messageId']
+            Outbox.objects.create(status=status,statusCode=statusCode,
+                                    phone=phone,text=text,messageId=messageId)      
 
 class Inbox(models.Model):
     date = models.DateTimeField(null=True, blank=True)

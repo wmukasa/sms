@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import phoneNumbers,Sentsms
 
-# Register your models here.
+admin.site.register(phoneNumbers)
+admin.site.register(Sentsms)
+

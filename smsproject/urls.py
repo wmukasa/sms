@@ -7,6 +7,7 @@ urlpatterns = [
     #path('',include('smsapp.urls')),
     path('',views.outbox,name='outbox'),
     path('smsapp/',include('smsapp.urls',namespace='smsapp')),
+    path('mysmsapp/',include('mysmsapp.urls')),
 ]
 
 

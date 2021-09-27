@@ -14,7 +14,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost', 'd912-154-224-125-43.ngrok.io']
+ALLOWED_HOSTS = ['127.0.0.1','localhost', '4004-197-239-7-134.ngrok.io']
 
 
 # Application definition
@@ -123,4 +123,4 @@ AT_API_KEY = config('AT_API_KEY')
 
 AT_USER_NAME = config('AT_USER_NAME')
 
-AT_FROM_VALUE = config('AT_FROM_VALUE')
+

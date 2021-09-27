@@ -13,34 +13,6 @@ from .forms import CreateSms
 '''
 import africastalking
 
-def send_me_sms(request):
-    # Initialize SDK
-    username = "sandbox"    # use 'sandbox' for development in the test environment
-    api_key = "1ee6d078109c880a4382fe6a40739a91cae59960e54eaef86e1c2861c4200f8f"      # use your sandbox app API key for development in the test environment
-    africastalking.initialize(username, api_key)
-    #def home(request):
-        #return HttpResponse('<h1>Hello WIlliam</h1>')
-    # Initialize a service e.g. SMS
-    sms = africastalking.SMS
-    my_phones =[]
-    phone_set = phoneNumbers.objects.exclude(phone='').values_list('phone')
-    for contact in phone_set:
-        my_phones.append(contact[0])
-    print(my_phones)
-    sms.send("Gd afternoon, on Sunday we're having our meeting for the INTRODUCTION &WEDDING CEREMONIES OF MUKASA WILLY WAMALA.At Mengo time 2PM Dr.Tonny 070292051", my_phones)
-    #my_sms = SMS()
-    #response = my_sms.send(*my_phones)
-    #print(response)
-    
-    for recipent in response['SMSMessageData']['Recipients']:
-        number = recipient['number']
-        status = recipient['status']
-        statusCode = recipient['statusCode']
-        Outbox.objects.create(number=number, status=status,statusCode=statusCode)
-    
-    print('Finished sending  messages')
-    
-    return HttpResponse('')
 '''
 def outbox(request):
     outbox = Outbox.objects.all()
@@ -69,18 +41,18 @@ def create_sms(request):
             print(my_phones) 
             phone_number = my_phones
             message = form.cleaned_data.get("message")
-            #while len(my_phones): 
+            Outbox.send(phone_number,message)
 
-            for cont in my_phones:
-                if (my_phones.index(cont)==0):
-                    print(cont)
-                    Outbox.send(cont,message)
-                if (my_phones.index(cont)==1):
-                    print(cont)
-                    Outbox.send(cont,message)
-                if (my_phones.index(cont)==2):
-                    print(cont)
-                    Outbox.send(cont,message)
+            # for cont in my_phones:
+            #     if (my_phones.index(cont)==0):
+            #         print(cont)
+            #         Outbox.send(cont,message)
+                # if (my_phones.index(cont)==1):
+                #     print(cont)
+                #     #Outbox.send(cont,message)
+                # if (my_phones.index(cont)==2):
+                #     print(cont)
+                #     #Outbox.send(cont,message)
             return redirect('outbox')
 
     return render(request, "smsapp/createsms.html", {"form": form})
